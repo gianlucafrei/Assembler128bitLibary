@@ -12,18 +12,22 @@
 ;
 SECTION .bss			; Section containing uninitialized data
 
+lint1: resb 16
+
 SECTION .data			; Section containing initialised data
 
 SECTION .text			; Section containing code
 
 global 	_start			; Linker needs this to find the entry point!
 
+extern readlongint
 _start:
+	nop
+	
+	mov rdi, lint1
+	call readlongint
 
 	nop
-
-
-
 ; All done! Let's end this party:
 Done:
 	mov eax,1		; Code for Exit Syscall

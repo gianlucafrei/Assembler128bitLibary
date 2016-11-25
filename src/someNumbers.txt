@@ -1,0 +1,6 @@
+9babe1cc85e7a9039f80dd2a866d20f5x0  128 bit
+8b6f2f688f1a03486cdbebefc2dfdf80x0  128 bit
+fedcba9876543210fedcba9876543210
+
+readlonglong pseudocode:
+Länge der zahl herausfinden
