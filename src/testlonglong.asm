@@ -18,14 +18,18 @@ SECTION .data			; Section containing initialised data
 
 SECTION .text			; Section containing code
 
+extern readlonglong
+extern writelonglong
+
 global 	_start			; Linker needs this to find the entry point!
 
-extern readlongint
 _start:
 	nop
-	
+
 	mov rdi, lint1
-	call readlongint
+	call readlonglong
+	mov rdi, lint1
+	call writelonglong
 
 	nop
 ; All done! Let's end this party:
