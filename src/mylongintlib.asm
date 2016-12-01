@@ -235,6 +235,10 @@ copylonglong:
 ;       rsi i for source index
 ;       It would make more sence to copy from source to destination ;)
 ;
+  push r8
+  push r9
   movelonginttoregister r8, r9, rdi
   movlonginttomemory r8, r9, rsi
+  pop r9
+  pop r8
   ret
