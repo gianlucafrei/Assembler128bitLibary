@@ -13,6 +13,8 @@
 SECTION .bss			; Section containing uninitialized data
 
 lint1: resb 16
+lint2: resb 16
+lint3: resb 16
 
 SECTION .data			; Section containing initialised data
 
@@ -20,6 +22,9 @@ SECTION .text			; Section containing code
 
 extern readlonglong
 extern writelonglong
+extern copylonglong
+extern addition
+extern subtraction
 
 global 	_start			; Linker needs this to find the entry point!
 
@@ -28,8 +33,17 @@ _start:
 
 	mov rdi, lint1
 	call readlonglong
+
+	mov rdi, lint2
+	call readlonglong
+
+	mov rdi, lint1
+	mov rsi, lint2
+	call subtraction
+
 	mov rdi, lint1
 	call writelonglong
+
 
 	nop
 ; All done! Let's end this party:

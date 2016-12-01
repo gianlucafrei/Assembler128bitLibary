@@ -13,7 +13,7 @@
 
 SECTION .bss			; Section containing uninitialized data
 
-inputbufflen equ 32
+inputbufflen equ 33
 inputbuff: resb inputbufflen
 outputbufflen equ 33
 outputbuff: resb outputbufflen
@@ -26,23 +26,27 @@ SECTION .text			; Section containing code
 
 linefeed equ 10
 nochar equ 0
-longlonglen equ 15
+longlonglen equ 15    ;For looping
+sohll equ 8 ; size of half longlong
 
 global readlonglong
 global writelonglong
+global copylonglong
+global addition
+global subtraction
 
 ; Moves a long int from registers to  memory
 ; 1) low 64 bit 2) height 64bit 3) destination adress
 %macro movlonginttomemory 3
   mov [%3], %1
-  mov [%3 + 8], %2
+  mov [%3 + sohll], %2
 %endmacro
 
 ; Moves a long int from memory in two registers
-; 1) low 64 bit 2) height 64bit 3) destination adress
+; 1) low 64 bit 2) height 64bit 3) longlong adress
 %macro movelonginttoregister 3
   mov %1, [%3]
-  mov %2, [%3 + 8]
+  mov %2, [%3 + sohll]
 %endmacro
 
 ; Pushes some registers
@@ -179,4 +183,58 @@ decodechar:
   rcl r9, 1
   and al, 0fH
   add r8b, al
+  ret
+;-------------------------------------------------------------------------------
+; Provides the addition of two big integres.
+; Params: Adresses of the two longlongs in RDI and RSI
+; The result will be written in RDI
+; Affects the carry flag
+addition:
+  push r8
+  push r9
+  ; First we need to copy the second longlong into two registres
+  movelonginttoregister r8, r9, rsi
+  add [rdi], r8   ; Add the lower 64bit
+  adc [rdi+ sohll], r9   ; Add the upper 64 bit with the carry bit
+  ;Finito
+  pop r9
+  pop r8
+  ret
+;-------------------------------------------------------------------------------
+; Provides the subtraction of two big integres.
+; Params: Adresses of the two longlongs in RDI and RSI
+; The result will be written in RDI
+; Affects the carry flag
+subtraction:
+  push r8
+  push r9
+  ; First we need to copy the second longlong into two registres
+  movelonginttoregister r8, r9, rsi
+  ;Test if rsi is above
+  cmp r9, [rdi+ sohll]
+  ja .retzero
+  sub [rdi+ sohll], r9    ; subtract the upper 64 bit with the carry bit
+  sbb [rdi], r8           ; subtract the lower 64bit
+  jnc .finito             ; If rdi was bigger, the carry flag is true, caused by the sub with borrow instruction 
+  ; So, if rdi was bigger, then set the result to zero
+  .retzero:
+  mov r8, 0
+  mov r9, 0
+  movlonginttomemory r8, r9, rdi
+  .finito:
+  pop r9
+  pop r8
+  ret
+
+copylonglong:
+;---------------------------------- ---------------------------------------------
+; As in the homework descrition wrtitten, it copies the long long
+; from rdi to rsi
+; 
+; Note: rdi stands for destination index and 
+;       rsi i for source index
+;       It would make more sence to copy from source to destination ;)
+;
+  movelonginttoregister r8, r9, rdi
+  movlonginttomemory r8, r9, rsi
   ret
