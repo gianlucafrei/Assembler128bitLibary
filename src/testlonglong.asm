@@ -137,10 +137,9 @@ _start:
 	callsub X, Y
 	printstr MsgSubXY, MsgSubXYLen
 	printstr MsgX, MsgLen
-	printstr MsgX, MsgLen
 	callwrite X
 	printstr MsgY, MsgLen
-	callwrite X
+	callwrite Y
 	; R = R - S
 	callsub R, S
 	printstr MsgSubRS, MsgSubRSLen

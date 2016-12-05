@@ -278,7 +278,7 @@ multiplication:
 .nooverflow2:
   test rbx, rbx
   jnc .returnnooverflow
-  add al, byte 256  ;Set the overflowflag
+  add al, byte 255  ;Set the overflowflag
 .returnnooverflow:
   pop r11
   pop r10
