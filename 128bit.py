@@ -16,19 +16,16 @@
 # T = T * Z
 # print T and Z
 
-print "Enter x"
-x=int(raw_input("input your hex number -> "),16)
-print "Enter y"
-y=int(raw_input("input your hex number -> "),16)
-print "Enter z"
-z=int(raw_input("input your hex number -> "),16)
+x=int(raw_input("x: "),16)
+y=int(raw_input("y: "),16)
+z=int(raw_input("z: "),16)
 
 def exercise(x,y,z):
-    print "Copy X into a long long number R"
+    #print "Copy X into a long long number R"
     r = x
-    print "Copy Y into a long long number S"
+    #print "Copy Y into a long long number S"
     s = y
-    print "Copy Z into a long long number T"
+    #print "Copy Z into a long long number T"
     t = z
 
     print("X = X + Y")
