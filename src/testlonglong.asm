@@ -29,12 +29,14 @@ MsgS: db "S: "
 MsgT: db "T: "
 MsgLen equ 3
 
-MsgAddXY: db "X = X + Y",10
+MsgAddXY: db "*** X = X + Y",10
 MsgAddXYLen equ $-MsgAddXY
-MsgSubXY: db "X = X - Y",10
+MsgSubXY: db "*** X = X - Y",10
 MsgSubXYLen equ $-MsgSubXY
-MsgSubRS: db "R = R - S",10
+MsgSubRS: db "*** R = R - S",10
 MsgSubRSLen equ $-MsgSubRS
+MsgMulTZ: db "*** T = T * Z",10
+MsgMulTZLen equ $-MsgMulTZ
 
 SECTION .text			; Section containing code
 
@@ -43,6 +45,7 @@ extern writelonglong
 extern copylonglong
 extern addition
 extern subtraction
+extern multiplication
 
 global 	_start			; Linker needs this to find the entry point!
 
@@ -82,6 +85,23 @@ pop rdx
 	mov rdi, %1
 	call writelonglong
 %endmacro
+%macro callmul 2
+	mov rdi, %1
+	mov rsi, %2
+	call multiplication
+%endmacro
+
+%macro debug 0
+;DEBUG: Print R
+	mov rdi, R
+	call writelonglong
+	;DEBUG: Print S
+	mov rdi, S
+	call writelonglong
+	;DEBUG: Print T
+	mov rdi, T
+	call writelonglong
+%endmacro
 _start:
 	nop
 
@@ -104,16 +124,7 @@ _start:
 	callcp Y, S
 	; Copy Z to T
 	callcp Z, T
-
-	;DEBUG: Print R
-	;mov rdi, R
-	;call writelonglong
-	;DEBUG: Print S
-	;mov rdi, S
-	;call writelonglong
-	;DEBUG: Print T
-	;mov rdi, T
-	;call writelonglong
+	
 
 	; X = X + Y
 	calladd X, Y
@@ -122,7 +133,6 @@ _start:
 	callwrite X
 	printstr MsgY, MsgLen
 	callwrite Y
-	
 	; X = X - Y
 	callsub X, Y
 	printstr MsgSubXY, MsgSubXYLen
@@ -131,7 +141,6 @@ _start:
 	callwrite X
 	printstr MsgY, MsgLen
 	callwrite X
-
 	; R = R - S
 	callsub R, S
 	printstr MsgSubRS, MsgSubRSLen
@@ -139,8 +148,13 @@ _start:
 	callwrite R
 	printstr MsgS, MsgLen
 	callwrite S
-
-	;multiplication
+	; T = T * Z
+	callmul T, Z
+	printstr MsgMulTZ, MsgMulTZLen
+	printstr MsgT, MsgLen
+	callwrite T
+	printstr MsgZ, MsgLen
+	callwrite Z
 
 	nop
 ; All done! Let's end this party:

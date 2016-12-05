@@ -34,6 +34,7 @@ global writelonglong
 global copylonglong
 global addition
 global subtraction
+global multiplication
 
 ; Moves a long int from registers to  memory
 ; 1) low 64 bit 2) height 64bit 3) destination adress
@@ -75,54 +76,54 @@ pop rax
 ;
 ;
 writelonglong:
-pushabcs89
-;some cleanup
-xor rdx, rdx
-xor r8, r8
-xor r9, r9
-; New go now from the most segnificent byte downwards and print each byte
-; I dont like to have some zeros before the number, so i wont print them uninitialized
-; the counter reached the first byte whitch isn't zero
-; In rdx its stored if a 'not zero' is reached, 1 for true
-mov rcx, longlonglen ;Move 15 to the counter
-.numberlenghtloop:
-mov r8b, byte [rdi + rcx] ;move the current byte in al
-test r8b, r8b
-jnz .bufferloop
-loop .numberlenghtloop ;Decrement rcx and jump not zero
-.bufferloop:
- ; now we have saved in rcx the position of the first non zero byte
- ; We should print the digits know
- ; copy the byte, then put the height 4 bits in r9, the others in r8
- mov r8b, byte [rdi + rcx]; move the char to r8b
- mov r9b, r8b  ;Copy the byte
- and r8b, 0fH
- shr r9b, 4
- ; put more signifikant 4 bit as a char in the output buffer
- add r9, charencoding ;calculate the adress
- mov r9b, [r9] ;get the char
- mov [outputbuff + rdx], r9b
- and r9, 00000000000000ffh
- inc rdx ;count of bytes in the output buffer
- ; put less signifikant 4 bit as a char in the output buffer
- add r8, charencoding ;calculate the adress
- mov r8b, [r8] ;get the char
- mov [outputbuff + rdx], r8b
- and r8, 00000000000000ffh
- inc rdx ;count of bytes in the output buffer
- dec rcx
- cmp rcx, 0
-jnl .bufferloop
-;add a linefeed to the buffer
-mov [outputbuff + rdx], byte linefeed
-;make syscall
-inc rdx              ; lenght of the string
-mov rax, 1           ; Sys write
-mov rdi, 1           ; file descriptor standart-outpu
-mov rsi, outputbuff  ; adress of the buffer
-syscall
-popabcs89
-ret
+  pushabcs89
+  ;some cleanup
+  xor rdx, rdx
+  xor r8, r8
+  xor r9, r9
+  ; New go now from the most segnificent byte downwards and print each byte
+  ; I dont like to have some zeros before the number, so i wont print them uninitialized
+  ; the counter reached the first byte whitch isn't zero
+  ; In rdx its stored if a 'not zero' is reached, 1 for true
+  mov rcx, longlonglen ;Move 15 to the counter
+  .numberlenghtloop:
+  mov r8b, byte [rdi + rcx] ;move the current byte in al
+  test r8b, r8b
+  jnz .bufferloop
+  loop .numberlenghtloop ;Decrement rcx and jump not zero
+  .bufferloop:
+  ; now we have saved in rcx the position of the first non zero byte
+  ; We should print the digits know
+  ; copy the byte, then put the height 4 bits in r9, the others in r8
+  mov r8b, byte [rdi + rcx]; move the char to r8b
+  mov r9b, r8b  ;Copy the byte
+  and r8b, 0fH
+  shr r9b, 4
+  ; put more signifikant 4 bit as a char in the output buffer
+  add r9, charencoding ;calculate the adress
+  mov r9b, [r9] ;get the char
+  mov [outputbuff + rdx], r9b
+  and r9, 00000000000000ffh
+  inc rdx ;count of bytes in the output buffer
+  ; put less signifikant 4 bit as a char in the output buffer
+  add r8, charencoding ;calculate the adress
+  mov r8b, [r8] ;get the char
+  mov [outputbuff + rdx], r8b
+  and r8, 00000000000000ffh
+  inc rdx ;count of bytes in the output buffer
+  dec rcx
+  cmp rcx, 0
+  jnl .bufferloop
+  ;add a linefeed to the buffer
+  mov [outputbuff + rdx], byte linefeed
+  ;make syscall
+  inc rdx              ; lenght of the string
+  mov rax, 1           ; Sys write
+  mov rdi, 1           ; file descriptor standart-outpu
+  mov rsi, outputbuff  ; adress of the buffer
+  syscall
+  popabcs89
+  ret
 ;-------------------------------------------------------------------------------
 ; Reads the next long int from the stdin and writes it to the memory at rdi
 ; Needs the inout in format fffffffff with a linefeed at the end
@@ -241,4 +242,45 @@ copylonglong:
   movlonginttomemory r8, r9, rsi
   pop r9
   pop r8
+  ret
+;-------------------------------------------------------------------------------
+; Provides the multiplication of two big integres.
+; Params: Adresses of the two longlongs in RDI and RSI
+; The result will be written in RDI
+; Affects the overflow flag
+; if the result is greater than 128bit, only the less 128 bit
+; will be saved
+multiplication:
+  pushabcs89
+  xor rbx, rbx  ;Clean up
+  push r10
+  push r11
+  ; Lets save the first longlong in r8:r9 and the second in r10:r11
+  movelonginttoregister r8, r9, rdi
+  movelonginttoregister r10, r11, rsi
+  ;Firstly mul each lower 64bits
+  mov rax, r8
+  mul r10
+  movlonginttomemory rax, rdx, rdi  ;Save the result from the first multiplication
+  ; Mul the lower with the heigher from the others
+  mov rax, r8
+  mul r11             ; We dont need the flags
+  add [rdi+sohll], rax ; Add it
+  jnc .nooverflow1
+  inc rbx              ;if an overflow, save this in rbx
+.nooverflow1:
+  ;Okey, lets make the last multiplication
+  mov rax, r9
+  mul r10
+  add [rdi+sohll], rax
+  jnc .nooverflow2
+  inc rbx
+.nooverflow2:
+  test rbx, rbx
+  jnc .returnnooverflow
+  add al, byte 256  ;Set the overflowflag
+.returnnooverflow:
+  pop r11
+  pop r10
+  popabcs89
   ret
