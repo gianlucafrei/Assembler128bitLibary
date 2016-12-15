@@ -1,7 +1,7 @@
 ;  Executable name : mylongintlib.o
-;  Version         : 0.1
+;  Version         : 1.0
 ;  Created date    : 24.11.2016
-;  Last update     : -
+;  Last update     : 15.12.2016
 ;  Author          : Gian-Luca Frei
 ;  Description     : A libary whitch provides basic function
 ;                    for 128bit integer arithmetics.

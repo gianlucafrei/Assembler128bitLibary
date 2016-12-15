@@ -1,0 +1,30 @@
+Author: Gian-Luca Frei i1b BFH
+
+I don't write here, what's already in the comments or in the exercise description.
+The following lines are just some additional notes about the library.
+
+- The notation r9:r8 means that the upper 64bits are stored in the register r9
+  and the lower 64bit in r8
+
+- if you enter a number greater than 128 bits (32chars), there will be an error with the
+  next input. So just enter 32 chars (0123456789abcdef) and type enter.
+
+The following is an example usage of the program testlonlong:
+
+gianluca@gianluca-VirtualBox:~/Documents/Assembler128bitLibary/src$ ./testlonglong
+X: 9babe1cc85e7a9039f80dd2a866d20f5
+Y: 8b6f2f688f1a03486cdbebefc2dfdf
+Z: fedcba9876543210fedcba987654
+*** X = X + Y
+X: 9c3750fbee76c306e7edb916763000d4
+Y: 8b6f2f688f1a03486cdbebefc2dfdf
+*** X = X - Y
+X: 9babe1cc85e7a9039f80dd2a866d20f5
+Y: 8b6f2f688f1a03486cdbebefc2dfdf
+*** R = R - S
+R: 9b20729d1d588f005714013e96aa4116
+S: 8b6f2f688f1a03486cdbebefc2dfdf
+*** T = T * Z
+T: 360292eca718b8ff635bf71eca718b90
+Z: fedcba9876543210fedcba987654
+

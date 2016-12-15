@@ -1,15 +1,18 @@
 ;  Executable name : testlonglong.o
-;  Version         : 0.1
+;  Version         : 1.0
 ;  Created date    : 24.11.2016
-;  Last update     : -
+;  Last update     : 15.12.2016
 ;  Author          : Gian-Luca Frei
 ;  Description     : This program executes some tests of the
 ;                    mylongintlib-libary
 ;
 ;  Run it this way:
-;    name < (input file)
+;  command: ./testlonglong 
+;  Enter the numbers in hexformat (valid chars 0123456789abcdef)
 ;
+;  Additional information notes_about_the_libary.txt file
 ;
+	
 SECTION .bss			; Section containing uninitialized data
 
 X: resb 16
