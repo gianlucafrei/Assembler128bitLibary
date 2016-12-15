@@ -157,13 +157,13 @@ readlonglong:
   cmp rcx, inputbufflen
   jne .loop   ;Loop end
 .endfound:
-  ;Save r8:r9 in memory and Return
+  ;Save r9:r8 in memory and Return
   pop rdi ; <- in rdi we stored the destinantion index
   movlonginttomemory r8, r9, rdi
   popabcs89
   ret
 ; Decodechar: The char to decode must be stored in al
-; It will be added to r8;r9
+; It will be added to r9;r8
 decodechar:
   ;Transform the char to a number 4 bit 0-15
   ; Asci values 0 = 48, a = 97
@@ -173,7 +173,7 @@ decodechar:
   sub al, 39 ;correct a-f
 .valid:
   ;The number value is know stored in al
-  ;shift r8:r9 4 times, then insert al
+  ;shift r9:r8 4 times, then insert al
   shl r8, 1
   rcl r9, 1
   shl r8, 1
@@ -216,7 +216,7 @@ subtraction:
   ja .retzero
   sub [rdi+ sohll], r9    ; subtract the upper 64 bit with the carry bit
   sbb [rdi], r8           ; subtract the lower 64bit
-  jnc .finito             ; If rdi was bigger, the carry flag is true, caused by the sub with borrow instruction 
+  jnc .finito             ; If rdi was bigger, the carry flag is true, caused by the sub with borrow instruction
   ; So, if rdi was bigger, then set the result to zero
   .retzero:
   mov r8, 0
@@ -231,8 +231,8 @@ copylonglong:
 ;---------------------------------- ---------------------------------------------
 ; As in the homework descrition wrtitten, it copies the long long
 ; from rdi to rsi
-; 
-; Note: rdi stands for destination index and 
+;
+; Note: rdi stands for destination index and
 ;       rsi i for source index
 ;       It would make more sence to copy from source to destination ;)
 ;
@@ -255,7 +255,7 @@ multiplication:
   xor rbx, rbx  ;Clean up
   push r10
   push r11
-  ; Lets save the first longlong in r8:r9 and the second in r10:r11
+  ; Lets save the first longlong in r9:r8 and the second in r11:r10
   movelonginttoregister r8, r9, rdi
   movelonginttoregister r10, r11, rsi
   ;Firstly mul each lower 64bits
@@ -277,8 +277,16 @@ multiplication:
   inc rbx
 .nooverflow2:
   test rbx, rbx
-  jnc .returnnooverflow
-  add al, byte 255  ;Set the overflowflag
+  jz .returnnooverflow
+.nooverflow3:
+  test r9, r9
+  jz .returnnooverflow
+  test r11,r11
+  jz .returnnooverflow
+.setof:
+  xor rax, rax  ;Clear rax
+  mov ah, 127
+  add ah, 1     ;This sets the flag
 .returnnooverflow:
   pop r11
   pop r10
