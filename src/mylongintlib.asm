@@ -213,11 +213,15 @@ subtraction:
   movelonginttoregister r8, r9, rsi
   ;Test if rsi is above
   cmp r9, [rdi+ sohll]
-  ja .retzero
+  ja .retzero           ;Return zero if r9 is bigger
+  cmp r9, [rdi+ sohll]
+  jb .subtract          ;start the subtraction if r9 is below
+  cmp r8, [rdi]
+  ja .retzero           ;if r9 is euqals, check the less sigifikant bits
+  .subtract:
   sub [rdi+ sohll], r9    ; subtract the upper 64 bit with the carry bit
   sbb [rdi], r8           ; subtract the lower 64bit
-  jnc .finito             ; If rdi was bigger, the carry flag is true, caused by the sub with borrow instruction
-  ; So, if rdi was bigger, then set the result to zero
+  jmp .finito
   .retzero:
   mov r8, 0
   mov r9, 0
