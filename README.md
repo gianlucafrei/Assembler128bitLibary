@@ -1,4 +1,6 @@
-This is the official description from our teacher Mr. Benoist (http://www.benoist.ch)
+This is a homework from the course computer-science basics of Mr. Benoist at the Berne Univercity of applied science in Switzerland.
+
+The following  is the official description from our teacher Mr. Benoist (http://www.benoist.ch)
 
 <h1>Homework, Assembly Language</h1>
 
